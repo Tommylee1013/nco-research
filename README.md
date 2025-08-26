@@ -4,7 +4,7 @@ This repository contains research code and experiments for **Posterior-NCO**,
 an extension of **Nested Clustered Optimization (NCO)** that incorporates **Managers’ Views**  
 via Bayesian posterior covariance/correlation matrices.
 
-The project is designed as an **undergraduate research paper (소논문)** but aims at a level of rigor  
+The project is designed as an **undergraduate research paper** but aims at a level of rigor  
 comparable to graduate-level portfolio optimization studies.
 
 ---
