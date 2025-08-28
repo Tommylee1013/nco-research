@@ -50,8 +50,24 @@ pip install -e .
 
 #### 1. Run Monte Carlo Experiment
 
+- use Black & Litterman Style update
+
 ```bash
-python experiments/run_mc_experiment.py --n 60 --n_mc 200
+python run_montecarlo_experiment.py --n_assets 40 --n_clusters 4 --n_in_sample 252 \
+  --n_out_of_sample 252 --n_trials 50 --rho_in 0.65 --rho_out 0.05 --df 5 \
+  --shrinkage lw_constant_corr --denoising mp_constant --detone \
+  --use_views --view_branch black_litterman --bl_view_type pairwise --n_views 10 \
+  --view_noise_std 1e-4 --view_confidence_scale 0.5
+```
+
+- use Correlation View Blending
+
+```bash
+python run_montecarlo_experiment.py --n_assets 40 --n_clusters 4 --n_in_sample 252 \
+  --n_out_of_sample 252 --n_trials 50 --rho_in 0.65 --rho_out 0.05 --df 5 \
+  --shrinkage lw_constant_corr --denoising mp_constant --detone \
+  --use_views --view_branch corr_blend --beta_view 0.3 --intra_scale_view 1.1 \
+  --inter_scale_view 0.7 --corr_view_noise_std 0.02
 ```
 
 This simulates block-structured covariance matrices and compares OOS Sharpe ratios across:
@@ -63,7 +79,7 @@ This simulates block-structured covariance matrices and compares OOS Sharpe rati
 #### 2. Analyze Results
 
 ```bash
-python experiments/analyze_results.py
+python analyze_results.py
 ```
 
 Generates tables and figures for OOS performance, Sharpe distribution, and win-rate comparisons (NCO vs Markowitz).
