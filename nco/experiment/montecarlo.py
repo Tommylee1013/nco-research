@@ -43,6 +43,8 @@ from ..optimization.nco import nco_portfolio
 
 from ..simulation.generator import generate_block_covariance, simulate_returns
 from ..simulation.metrics import evaluate_portfolio
+from ..simulation.returns import simulate_arma_garch_block_returns
+
 
 from ..bayesian.black_litterman import black_litterman_posterior
 from ..bayesian.views import (
@@ -244,6 +246,17 @@ def monte_carlo_experiment(
     # Evaluation
     risk_free_rate: float = 0.0,
     seed: int | None = 123,
+    # Simulator choice
+    simulator: str = "gaussian",   # {'gaussian', 'arma_garch_block'}
+    # ARMA–GARCH params (only used if simulator == 'arma_garch_block')
+    arma_ar: list[float] | tuple[float, ...] = (),
+    arma_ma: list[float] | tuple[float, ...] = (),
+    arma_constant: float = 0.0,
+    garch_omega: float = 1e-6,
+    garch_alpha: list[float] | tuple[float, ...] = (0.05,),
+    garch_beta:  list[float] | tuple[float, ...] = (0.94,),
+    garch_h0: float | None = None,
+    common_shock_df: float | None = 7.0,
 ) -> pd.DataFrame:
     """
     Run a Monte Carlo study comparing four methods:
@@ -283,20 +296,55 @@ def monte_carlo_experiment(
         )
 
         # 2) Simulate in-sample and out-of-sample returns
-        in_sample_returns = simulate_returns(
-            expected_returns=true_expected_returns,
-            covariance_matrix=true_covariance,
-            n_observations=n_in_sample,
-            degrees_of_freedom=degrees_of_freedom,
-            seed=rng.integers(1e9),
-        )
-        out_of_sample_returns = simulate_returns(
-            expected_returns=true_expected_returns,
-            covariance_matrix=true_covariance,
-            n_observations=n_out_of_sample,
-            degrees_of_freedom=degrees_of_freedom,
-            seed=rng.integers(1e9),
-        )
+        # in_sample_returns = simulate_returns(
+        #     expected_returns=true_expected_returns,
+        #     covariance_matrix=true_covariance,
+        #     n_observations=n_in_sample,
+        #     degrees_of_freedom=degrees_of_freedom,
+        #     seed=rng.integers(1e9),
+        # )
+        # out_of_sample_returns = simulate_returns(
+        #     expected_returns=true_expected_returns,
+        #     covariance_matrix=true_covariance,
+        #     n_observations=n_out_of_sample,
+        #     degrees_of_freedom=degrees_of_freedom,
+        #     seed=rng.integers(1e9),
+        # )
+        if simulator == "gaussian":
+            in_sample_returns = simulate_returns(
+                expected_returns=true_expected_returns,
+                covariance_matrix=true_covariance,
+                n_observations=n_in_sample,
+                degrees_of_freedom=degrees_of_freedom,
+                seed=rng.integers(1e9),
+            )
+            out_of_sample_returns = simulate_returns(
+                expected_returns=true_expected_returns,
+                covariance_matrix=true_covariance,
+                n_observations=n_out_of_sample,
+                degrees_of_freedom=degrees_of_freedom,
+                seed=rng.integers(1e9),
+            )
+        elif simulator == "arma_garch_block":
+            total = n_in_sample + n_out_of_sample
+            all_returns, _ = simulate_arma_garch_block_returns(
+                asset_names=asset_names,
+                n_observations=total,
+                block_correlation=true_correlation,  # ← 블록 구조 그대로 활용
+                ar_coefficients=arma_ar,
+                ma_coefficients=arma_ma,
+                arma_constant=arma_constant,
+                omega=garch_omega,
+                alpha_coefficients=garch_alpha,
+                beta_coefficients=garch_beta,
+                initial_variance=garch_h0,
+                dof_common_shock=common_shock_df,
+                seed=rng.integers(1e9),
+            )
+            in_sample_returns = all_returns.iloc[:n_in_sample]
+            out_of_sample_returns = all_returns.iloc[n_in_sample:n_in_sample + n_out_of_sample]
+        else:
+            raise ValueError("simulator must be one of {'gaussian', 'arma_garch_block'}")
 
         # 3) Estimators (means + shrinkage)
         estimated_expected_returns = in_sample_returns.mean(axis=0)

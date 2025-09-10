@@ -6,6 +6,10 @@ import pandas as pd
 
 from nco.experiment.montecarlo import monte_carlo_experiment
 
+def _parse_floats(s: str | None) -> list[float]:
+    if not s:
+        return []
+    return [float(x) for x in s.split(",") if x.strip() != ""]
 
 def parse_args():
     p = argparse.ArgumentParser(
@@ -66,6 +70,27 @@ def parse_args():
     p.add_argument("--corr_view_noise_std", type=float, default=0.0,
                    help="Noise std added to correlation view before projection.")
 
+    # -------- Simulator (optional) --------
+    p.add_argument("--simulator", type=str, default="gaussian",
+                   choices=["gaussian", "arma_garch_block"],
+                   help="Data generator for in/out samples.")
+    p.add_argument("--arma_ar", type=str, default="",
+                   help="Comma-separated AR coefficients for ARMA(p,q), e.g. '0.3,-0.1'.")
+    p.add_argument("--arma_ma", type=str, default="",
+                   help="Comma-separated MA coefficients for ARMA(p,q), e.g. '0.2'.")
+    p.add_argument("--arma_constant", type=float, default=0.0,
+                   help="ARMA intercept term.")
+    p.add_argument("--garch_omega", type=float, default=1e-6,
+                   help="GARCH intercept omega.")
+    p.add_argument("--garch_alpha", type=str, default="0.05",
+                   help="Comma-separated alpha coefficients for GARCH(p,q), e.g. '0.06,0.03'.")
+    p.add_argument("--garch_beta", type=str, default="0.94",
+                   help="Comma-separated beta coefficients for GARCH(p,q), e.g. '0.90'.")
+    p.add_argument("--garch_h0", type=float, default=None,
+                   help="Initial variance h0 (optional).")
+    p.add_argument("--common_shock_df", type=float, default=7.0,
+                   help="t dof for common shocks in arma_garch_block (<=0 for Gaussian).")
+
     # -------- IO --------
     p.add_argument("--outdir", type=str, default="data/synthetic", help="Output directory for CSV.")
     p.add_argument("--filename_prefix", type=str, default="mc",
@@ -79,6 +104,7 @@ def main():
 
     # Interpret df <= 0 as Gaussian
     df = None if args.df is None or args.df <= 0 else float(args.df)
+    common_df = None if args.common_shock_df is None or args.common_shock_df <= 0 else float(args.common_shock_df)
 
     df_results = monte_carlo_experiment(
         # core
@@ -110,6 +136,16 @@ def main():
         intra_scale_view=args.intra_scale_view,
         inter_scale_view=args.inter_scale_view,
         corr_view_noise_std=args.corr_view_noise_std,
+        # simulator
+        simulator=args.simulator,
+        arma_ar=_parse_floats(args.arma_ar),
+        arma_ma=_parse_floats(args.arma_ma),
+        arma_constant=args.arma_constant,
+        garch_omega=args.garch_omega,
+        garch_alpha=_parse_floats(args.garch_alpha),
+        garch_beta=_parse_floats(args.garch_beta),
+        garch_h0=args.garch_h0,
+        common_shock_df=common_df,
     )
 
     os.makedirs(args.outdir, exist_ok=True)
@@ -117,6 +153,7 @@ def main():
 
     parts = [
         args.filename_prefix,
+        f"SIM{args.simulator}",
         f"N{args.n_assets}",
         f"T{args.n_in_sample}-{args.n_out_of_sample}",
         f"K{args.n_clusters}",
@@ -138,10 +175,9 @@ def main():
     try:
         summary = df_results.groupby("method")[["sharpe", "vol", "mdd", "hhi"]].agg(["mean", "median"])
         pd.set_option("display.width", 120)
-        print("\n==== Summary (mean/median) ====\n", summary)
+        print("\n==== Summarçy (mean/median) ====\n", summary)
     except Exception:
         pass
-
 
 if __name__ == "__main__":
     main()
