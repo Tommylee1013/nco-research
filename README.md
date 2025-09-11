@@ -110,9 +110,9 @@ NCO            0.002410  0.001699  0.129773  0.128361 -0.943102 -0.967769  0.064
 Posterior-NCO  0.002550  0.002908  0.146326  0.142617 -0.967769 -0.983234  0.057885  0.051195
 
            shrinkage    denoising  detone  win_rate                     compare
-0  lw_constant_corr  mp_constant    True  0.483667            NCO_vs_Markowitz
-1  lw_constant_corr  mp_constant    True  0.506667  Posterior-NCO_vs_Markowitz
-2  lw_constant_corr  mp_constant    True  0.510000        Posterior-NCO_vs_NCO
+0  lw_constant_corr  mp_constant    True     0.479            NCO_vs_Markowitz
+1  lw_constant_corr  mp_constant    True     0.511  Posterior-NCO_vs_Markowitz
+2  lw_constant_corr  mp_constant    True     0.528        Posterior-NCO_vs_NCO
 
 Correlation View Blending
 
@@ -126,7 +126,7 @@ NCO            0.001422  0.001507  0.129832  0.128514 -0.946440 -0.968951  0.064
 Posterior-NCO  0.001518  0.001054  0.128305  0.127023 -0.943855 -0.966271  0.063690  0.062790
 ```
 
-![blacklitterman_nco_result.png](images/blacklitterman_nco_result.png)
+![blacklitterman_style_result.png](images/blacklitterman_style_result.png)
 
 #### Sharpe Ratio
 
