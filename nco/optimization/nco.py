@@ -26,6 +26,8 @@ def _recursive_allocation(node, asset_names, expected_returns, covariance_matrix
     cov_lr = float(left @ (covariance_matrix @ right))
     meta_cov = pd.DataFrame([[var_left, cov_lr], [cov_lr, var_right]], index=["L","R"], columns=["L","R"])
     meta_cov = nearest_positive_semidefinite(meta_cov)
+    # meta_cov (2x2 covariance) computed but unused in current version.
+    # Could be useful if extending to Sharpe-based or generalized splits.
 
     if (var_left + var_right) <= 1e-12:
         alpha_left, alpha_right = 0.5, 0.5

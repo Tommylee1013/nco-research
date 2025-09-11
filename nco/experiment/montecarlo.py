@@ -37,6 +37,7 @@ from ..optimization.shrinkage import (
 from ..optimization.denoising import denoise_covariance_with_mp
 from ..optimization.markowitz import (
     maximum_sharpe_portfolio,
+    minimum_variance_portfolio,
     inverse_variance_portfolio,
 )
 from ..optimization.nco import nco_portfolio
@@ -363,10 +364,8 @@ def monte_carlo_experiment(
 
         # ---------- BASELINE BRANCH (no views): Markowitz / NCO / IVP ----------
         correlation_estimate = covariance_to_correlation(covariance_estimate)
-        weights_markowitz = maximum_sharpe_portfolio(
-            expected_returns=estimated_expected_returns,
+        weights_markowitz = minimum_variance_portfolio(
             covariance_matrix=covariance_estimate,
-            risk_free_rate=risk_free_rate,
         )
         weights_nco = nco_portfolio(
             expected_returns=estimated_expected_returns,

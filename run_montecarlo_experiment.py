@@ -175,7 +175,7 @@ def main():
     try:
         summary = df_results.groupby("method")[["sharpe", "vol", "mdd", "hhi"]].agg(["mean", "median"])
         pd.set_option("display.width", 120)
-        print("\n==== Summarçy (mean/median) ====\n", summary)
+        print("\n==== Summary (mean/median) ====\n", summary)
     except Exception:
         pass
 
