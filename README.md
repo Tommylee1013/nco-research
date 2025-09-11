@@ -126,7 +126,10 @@ NCO            0.001422  0.001507  0.129832  0.128514 -0.946440 -0.968951  0.064
 Posterior-NCO  0.001518  0.001054  0.128305  0.127023 -0.943855 -0.966271  0.063690  0.062790
 ```
 
-![blacklitterman_style_result.png](images/blacklitterman_style_result.png)
+![black_litterman_sharpe.png](images/black_litterman_sharpe.png)
+![black_litterman_vol.png](images/black_litterman_vol.png)
+![black_litterman_mdd.png](images/black_litterman_mdd.png)
+![black_litterman_hhi.png](images/black_litterman_hhi.png)
 
 #### Sharpe Ratio
 

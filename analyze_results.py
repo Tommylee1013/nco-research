@@ -59,16 +59,19 @@ def head_to_head(df: pd.DataFrame, pairs: list[tuple[str, str]]) -> pd.DataFrame
     return pd.concat(results, axis=0, ignore_index=True)
 
 
-def plot_sharpe_box(df: pd.DataFrame):
-    ax = df.boxplot(column="sharpe", by="method")
-    plt.title("Out-of-sample Sharpe by Method")
-    plt.suptitle("")
-    plt.grid(False)
-    plt.axhline(y=0, color="k", linestyle="--", lw = 1)
-    plt.xlabel("Method")
-    plt.ylabel("Sharpe")
-    plt.tight_layout()
-    plt.show()
+def plot_sharpe_box(df: pd.DataFrame, metrics: list[str] = ["sharpe", "vol", "mdd", "hhi"]):
+    import matplotlib.pyplot as plt
+    for metric in metrics:
+        ax = df.boxplot(column=metric, by="method")
+        plt.title(f"Out-of-sample {metric.capitalize()} by Method")
+        plt.suptitle("")
+        plt.grid(False)
+        if (metric == "sharpe") | (metric == "vol") :
+            plt.axhline(0, color="black", linestyle="--", linewidth=1)
+        plt.xlabel("Method")
+        plt.ylabel(metric.capitalize())
+        plt.tight_layout()
+        plt.show()
 
 
 def main():
