@@ -124,6 +124,13 @@ IVP            0.001254  0.001827  0.122779  0.121883 -0.933410 -0.957621  0.023
 Markowitz      0.001783  0.001685  0.137478  0.135186 -0.960875 -0.975582  0.039662  0.030308
 NCO            0.001422  0.001507  0.129832  0.128514 -0.946440 -0.968951  0.064350  0.063078
 Posterior-NCO  0.001518  0.001054  0.128305  0.127023 -0.943855 -0.966271  0.063690  0.062790
+
+==== Head-to-Head Win Rates ====
+           shrinkage    denoising  detone  win_rate                     compare
+0  lw_constant_corr  mp_constant    True  0.500000            NCO_vs_Markowitz
+1  lw_constant_corr  mp_constant    True  0.500000  Posterior-NCO_vs_Markowitz
+2  lw_constant_corr  mp_constant    True  0.533333        Posterior-NCO_vs_NCO
+
 ```
 
 ![black_litterman_sharpe.png](images/black_litterman_sharpe.png)

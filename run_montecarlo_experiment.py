@@ -58,7 +58,7 @@ def parse_args():
     p.add_argument("--view_noise_std", type=float, default=1e-4, help="Std of noise added to q.")
     p.add_argument("--view_misspec_probability", type=float, default=0.0,
                    help="Probability to flip a view sign (mis-specification).")
-    p.add_argument("--view_confidence_scale", type=float, default=1.0,
+    p.add_argument("--view_confidence_scale", type=float, default=0.1,
                    help="Scale for Omega = scale * diag(P Σ P^T). Lower = stronger views.")
     # Correlation-blend config
     p.add_argument("--beta_view", type=float, default=0.3,
